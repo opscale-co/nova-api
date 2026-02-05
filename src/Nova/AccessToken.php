@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\MorphTo;
-use Laravel\Nova\Fields\MultiSelect;
 use Laravel\Nova\Fields\Repeater;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -15,6 +14,7 @@ use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Sanctum\HasApiTokens;
 use Opscale\NovaAPI\Models\AccessToken as Model;
+use Opscale\NovaAPI\Nova\Presets\AbilityPreset;
 use Opscale\NovaAPI\Nova\Repeatables\Ability;
 use Opscale\NovaAPI\Services\Actions\ConsumeToken;
 
@@ -85,32 +85,13 @@ class AccessToken extends Resource
                 ->onlyOnForms()
                 ->required(),
 
-            'abilities.create' => Repeater::make(__('Abilities'), 'abilities')
+            'abilities' => Repeater::make(__('Abilities'), 'abilities')
                 ->repeatables([
                     Ability::make(),
                 ])
-                ->asJson()
+                ->preset(new AbilityPreset())
                 ->onlyOnForms()
-                ->hideWhenUpdating(),
-
-            'abilities.update' => MultiSelect::make(__('Abilities'), 'abilities')
-                ->options(function (): Collection {
-                    if (! $this->resource) {
-                        return new Collection([]);
-                    }
-
-                    /** @var array<int, string>|null $abilities */
-                    $abilities = $this->resource->getAttribute('abilities');
-
-                    return (new Collection($abilities ?? []))
-                        ->mapWithKeys(function (string $ability): array {
-                            return [$ability => $ability];
-                        });
-                })
-                ->displayUsingLabels()
-                ->rules(fn (): array => $this->model()?->validationRules['abilities'] ?? [])
-                ->hideWhenCreating()
-                ->hideFromIndex(),
+                ->rules(fn (): array => $this->model()?->validationRules['abilities'] ?? []),
         ];
     }
 

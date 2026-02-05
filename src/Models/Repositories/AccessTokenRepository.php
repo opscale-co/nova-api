@@ -30,24 +30,32 @@ trait AccessTokenRepository
         /** @var \Laravel\Sanctum\NewAccessToken|null $token */
         $token = null;
 
-        /** @var array<array{fields: array{resource: string, actions: array<string>}}>|null $abilities */
+        /** @var array<array{fields: array{resource: string, actions: array<string>}}>|array<string>|null $abilities */
         $abilities = $this->getAttribute('abilities');
 
         if ($abilities) {
-            /** @var array<string> $abilityList */
-            $abilityList = (new Collection($abilities))->flatMap(function (array $item): Collection {
-                /** @var array{resource: string, actions: array<string>} $fields */
-                $fields = $item['fields'];
-                /** @var array<string> $actions */
-                $actions = $fields['actions'];
-                /** @var string $resource */
-                $resource = $fields['resource'];
+            // Check if abilities is already in flat format (from preset)
+            if (isset($abilities[0]) && is_string($abilities[0])) {
+                // Already in "resource:action" format
+                /** @var array<string> $abilityList */
+                $abilityList = $abilities;
+            } else {
+                // Legacy format: transform from repeater structure
+                /** @var array<string> $abilityList */
+                $abilityList = (new Collection($abilities))->flatMap(function (array $item): Collection {
+                    /** @var array{resource: string, actions: array<string>} $fields */
+                    $fields = $item['fields'];
+                    /** @var array<string> $actions */
+                    $actions = $fields['actions'];
+                    /** @var string $resource */
+                    $resource = $fields['resource'];
 
-                return (new Collection($actions))
-                    ->map(function (string $action) use ($resource): string {
-                        return strtolower($resource) . ':' . $action;
-                    });
-            })->all();
+                    return (new Collection($actions))
+                        ->map(function (string $action) use ($resource): string {
+                            return strtolower($resource) . ':' . $action;
+                        });
+                })->all();
+            }
         } else {
             $abilityList = ['*'];
         }
