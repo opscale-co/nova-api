@@ -2,6 +2,16 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## [1.1.0](https://github.com/opscale-co/nova-api/compare/v1.0.3...v1.1.0) (2026-02-05)
+
+### Features
+
+* **abilities:** enhance abilities handling and add AbilityPreset for better management ([8c64057](https://github.com/opscale-co/nova-api/commit/8c640573c392a4e956f2cbb921cca2263c516f3c))
+
+### Bug Fixes
+
+* **composer:** add missing dependencies and update scripts ([0918195](https://github.com/opscale-co/nova-api/commit/0918195565507a8feb18f23e3c2c3a0f83a9c991))
+
 ## [1.0.3](https://github.com/opscale-co/nova-api/compare/v1.0.2...v1.0.3) (2025-12-24)
 
 ### Performance Improvements

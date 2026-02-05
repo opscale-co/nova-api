@@ -1,94 +1,94 @@
 {
-    "name": "opscale-co/nova-api",
-    "description": "Add default secured CRUD API endpoints for your Nova resources.",
-    "version": "1.0.3",
-    "keywords": [
-        "laravel",
-        "nova",
-        "package",
-        "tool",
-        "opscale",
-        "api",
-        "orion",
-        "sanctum"
-    ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://nova.laravel.com"
-        }
-    ],
-    "homepage": "https://github.com/opscale-co/nova-api",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Opscale",
-            "email": "development@opscale.co",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": ">=8.2",
-        "laravel/sanctum": "^4.0",
-        "opscale-co/actions": "^1.0",
-        "opscale-co/nova-package-tools": "^1.0",
-        "tailflow/laravel-orion": "^2.23",
-        "theriddleofenigma/laravel-model-validation": "^1.6"
-    },
-    "autoload": {
-        "psr-4": {
-            "Opscale\\NovaAPI\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Opscale\\NovaAPI\\Tests\\": "tests",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Opscale\\NovaAPI\\ToolServiceProvider"
-            ]
-        }
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require-dev": {
-        "driftingly/rector-laravel": "^2.0",
-        "larastan/larastan": "^3.6",
-        "laravel/nova": "^5.4",
-        "laravel/nova-devtool": "^1.0",
-        "opscale-co/strict-rules": "^1.1",
-        "phpunit/phpunit": "^10.5",
-        "rector/rector": "^2.1",
-        "tightenco/duster": "^2.7"
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/phpstan analyse --verbose --ansi"
-        ],
-        "test": [
-            "@clear",
-            "@php vendor/bin/phpunit"
-        ]
+  "name": "opscale-co/nova-api",
+  "description": "Add default secured CRUD API endpoints for your Nova resources.",
+  "version": "1.1.0",
+  "keywords": [
+    "laravel",
+    "nova",
+    "package",
+    "tool",
+    "opscale",
+    "api",
+    "orion",
+    "sanctum"
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://nova.laravel.com"
     }
+  ],
+  "homepage": "https://github.com/opscale-co/nova-api",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Opscale",
+      "email": "development@opscale.co",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "laravel/sanctum": "^4.0",
+    "opscale-co/actions": "^1.0",
+    "opscale-co/nova-package-tools": "^1.0",
+    "tailflow/laravel-orion": "^2.23",
+    "theriddleofenigma/laravel-model-validation": "^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Opscale\\NovaAPI\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Opscale\\NovaAPI\\Tests\\": "tests",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Opscale\\NovaAPI\\ToolServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require-dev": {
+    "driftingly/rector-laravel": "^2.0",
+    "larastan/larastan": "^3.6",
+    "laravel/nova": "^5.4",
+    "laravel/nova-devtool": "^1.0",
+    "opscale-co/strict-rules": "^1.1",
+    "phpunit/phpunit": "^10.5",
+    "rector/rector": "^2.1",
+    "tightenco/duster": "^2.7"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/phpstan analyse --verbose --ansi"
+    ],
+    "test": [
+      "@clear",
+      "@php vendor/bin/phpunit"
+    ]
+  }
 }
