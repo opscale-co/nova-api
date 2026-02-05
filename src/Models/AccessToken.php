@@ -18,7 +18,7 @@ class AccessToken extends PersonalAccessToken
      */
     public array $validationRules = [
         'name' => ['required'],
-        'abilities' => ['nullable', 'gt:0'],
+        'abilities' => ['nullable', 'array', 'min:1'],
     ];
 
     /**

@@ -23,6 +23,9 @@ class Ability extends Repeatable
                 return [$resource::uriKey() => $resource::singularLabel()];
             })->toArray();
 
+        // Get current data if available
+        $currentData = $this->data ?? [];
+
         return array_merge(parent::fields($request), [
             Select::make(__('Resource'), 'resource')
                 ->options($resources)
