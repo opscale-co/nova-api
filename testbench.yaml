@@ -1,8 +1,13 @@
 laravel: '@testbench'
 
 providers:
+  - Inertia\ServiceProvider
   - Laravel\Nova\NovaCoreServiceProvider
   - Laravel\Nova\NovaServiceProvider
+  - Laravel\Fortify\FortifyServiceProvider
+  - Laravel\Dusk\DuskServiceProvider
+  - Laravel\Sanctum\SanctumServiceProvider
+  - Orion\OrionServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
   - Workbench\App\Providers\NovaServiceProvider
   - Opscale\NovaAPI\ToolServiceProvider

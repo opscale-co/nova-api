@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Http\Controllers;
 
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,7 +45,7 @@ class APIController extends Controller
     }
 
     /**
-     * @return class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>
+     * @return class-string<\Laravel\Nova\Resource<Model>>
      */
     final public function resolveResource(Request $request): string
     {
@@ -56,14 +59,14 @@ class APIController extends Controller
 
         // For routes like /api/users or /api/users/123, we want the second segment (users)
         $uriKey = $segments[1];
-        /** @var array<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $configuredResources */
+        /** @var array<int, class-string<\Laravel\Nova\Resource<Model>>> $configuredResources */
         $configuredResources = Config::get('nova-api.resources', []);
         $resources = new Collection($configuredResources);
 
-        /** @var class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>|null $resourceClass */
+        /** @var class-string<\Laravel\Nova\Resource<Model>>|null $resourceClass */
         $resourceClass = $resources
             ->first(function (mixed $resource) use ($uriKey): bool {
-                /** @var class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>> $resource */
+                /** @var class-string<\Laravel\Nova\Resource<Model>> $resource */
                 return $resource::uriKey() === $uriKey;
             });
 
@@ -80,7 +83,7 @@ class APIController extends Controller
     final public function resolveRequest(Request $request): string
     {
         $resource = $this->resolveResource($request);
-        $binding = $resource::uriKey() . '-request';
+        $binding = $resource::uriKey().'-request';
 
         return App::getAlias($binding);
     }
@@ -88,7 +91,7 @@ class APIController extends Controller
     final public function resolvePolicy(Request $request): string
     {
         $resource = $this->resolveResource($request);
-        $binding = $resource::uriKey() . '-policy';
+        $binding = $resource::uriKey().'-policy';
 
         return App::getAlias($binding);
     }
@@ -182,30 +185,30 @@ class APIController extends Controller
         );
     }
 
-    private function authorizationErrorResponse(AuthorizationException $e): JsonResponse
+    private function authorizationErrorResponse(AuthorizationException $authorizationException): JsonResponse
     {
-        $statusCode = $e->status() ?? Response::HTTP_FORBIDDEN;
+        $statusCode = $authorizationException->status() ?? Response::HTTP_FORBIDDEN;
 
-        return $this->errorResponse($e->getMessage(), $statusCode);
+        return $this->errorResponse($authorizationException->getMessage(), $statusCode);
     }
 
-    private function validationErrorResponse(ValidationException $e): JsonResponse
+    private function validationErrorResponse(ValidationException $validationException): JsonResponse
     {
         return new JsonResponse(
             [
                 'error' => 'Validation failed',
-                'errors' => $e->errors(),
+                'errors' => $validationException->errors(),
             ],
-            $e->status
+            $validationException->status
         );
     }
 
-    private function exceptionResponse(Exception $e): JsonResponse
+    private function exceptionResponse(Exception $exception): JsonResponse
     {
-        if ($e instanceof HttpExceptionInterface) {
-            return $this->errorResponse($e->getMessage(), $e->getStatusCode());
+        if ($exception instanceof HttpExceptionInterface) {
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
         }
 
-        return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->errorResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

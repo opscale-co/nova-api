@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Models;
 
-use Enigma\ValidatorTrait;
 use Laravel\Nova\Actions\Actionable;
 use Laravel\Sanctum\PersonalAccessToken;
 use Opscale\NovaAPI\Models\Repositories\AccessTokenRepository;
+use Opscale\Validations\Validatable;
 
 class AccessToken extends PersonalAccessToken
 {
     use AccessTokenRepository;
     use Actionable;
-    use ValidatorTrait;
+    use Validatable;
 
     /**
      * @var array<string, array<int, string>>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Services\Actions;
 
 use Illuminate\Support\Facades\Cache;
@@ -38,21 +40,32 @@ class ConsumeToken extends Action
     }
 
     /**
-     * @param  array{tokenId?: string}  $attributes
+     * The pipeline (execute) has already filled and validated the inputs
+     * against parameters() before handle() runs, so we trust $inputs here.
+     *
+     * @param  array{tokenId?: string}  $inputs
      * @return array{token: string}
      */
-    final public function handle(array $attributes = []): array
+    final public function handle(array $inputs = []): array
     {
-        $this->fill($attributes);
-
-        /** @var array{tokenId: string} $validated */
-        $validated = $this->validateAttributes();
-
-        $cacheKey = 'opscale.api.token.' . $validated['tokenId'];
-
         /** @var string $token */
-        $token = Cache::get($cacheKey, '');
+        $token = Cache::get('opscale.api.token.'.($inputs['tokenId'] ?? ''), '');
 
         return ['token' => $token];
+    }
+
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
+    final public function outputs(): array
+    {
+        return [
+            [
+                'name' => 'token',
+                'description' => 'The plain text token retrieved from cache, or an empty string when not found',
+                'type' => 'string',
+                'rules' => ['present', 'string'],
+            ],
+        ];
     }
 }

@@ -12,3 +12,5 @@ mix-manifest.json
 .phpunit.result.cache
 .DS_Store
 Thumbs.db
+.data/
+.specify/

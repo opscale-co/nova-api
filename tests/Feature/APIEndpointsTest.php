@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Laravel\Nova\NovaServiceProvider;
+use Laravel\Sanctum\SanctumServiceProvider;
 use Opscale\NovaAPI\Http\Controllers\APIController;
+use Opscale\NovaAPI\Nova\AccessToken;
 use Opscale\NovaAPI\Tests\TestCase;
+use Opscale\NovaAPI\ToolServiceProvider;
+use Orion\OrionServiceProvider;
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -38,7 +45,7 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['products:read']); // Only product abilities
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(403);
@@ -53,7 +60,7 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['users:read']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(200)
@@ -81,7 +88,7 @@ final class APIEndpointsTest extends TestCase
         ];
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/users', $userData);
 
         $testResponse->assertStatus(201);
@@ -100,10 +107,10 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['users:update']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->putJson('/api/users/' . $targetUser->id, [
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->putJson('/api/users/'.$targetUser->id, [
             'name' => 'Updated Name',
-            'email' => 'updated' . $targetUser->email,
+            'email' => 'updated'.$targetUser->email,
             'password' => 'newpassword123',
         ]);
 
@@ -123,8 +130,8 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['users:delete']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->deleteJson('/api/users/' . $targetUser->id);
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->deleteJson('/api/users/'.$targetUser->id);
 
         $testResponse->assertStatus(200);
         $this->assertDatabaseMissing('users', [
@@ -141,7 +148,7 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['products:read']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/products');
 
         $testResponse->assertStatus(200)
@@ -163,7 +170,7 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Expired Token', ['users:read'], Carbon::now()->subHour());
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(401);
@@ -187,7 +194,7 @@ final class APIEndpointsTest extends TestCase
         $newAccessToken = $user->createToken('Test Token', ['users:create']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/users', [
             'name' => '', // Invalid: empty name
             'email' => 'invalid-email', // Invalid: bad email format
@@ -201,11 +208,11 @@ final class APIEndpointsTest extends TestCase
     protected function getPackageProviders($app): array
     {
         return array_merge(parent::getPackageProviders($app), [
-            \Opscale\NovaAPI\ToolServiceProvider::class,
-            \Laravel\Sanctum\SanctumServiceProvider::class,
-            \Laravel\Nova\NovaServiceProvider::class,
+            ToolServiceProvider::class,
+            SanctumServiceProvider::class,
+            NovaServiceProvider::class,
             \Workbench\App\Providers\NovaServiceProvider::class,
-            \Orion\OrionServiceProvider::class,
+            OrionServiceProvider::class,
         ]);
     }
 
@@ -226,7 +233,7 @@ final class APIEndpointsTest extends TestCase
         $app['config']->set('nova-api.resources', [
             \Workbench\App\Nova\User::class,
             \Workbench\App\Nova\Product::class,
-            \Opscale\NovaAPI\Nova\AccessToken::class,
+            AccessToken::class,
         ]);
     }
 }
