@@ -4,6 +4,7 @@ includes:
     - vendor/opscale-co/strict-rules/rules.ddd.neon
     - vendor/opscale-co/strict-rules/rules.smells.neon
     - vendor/opscale-co/strict-rules/rules.solid.neon
+
 parameters:
     level: 9
     phpVersion: 80200
@@ -19,3 +20,33 @@ parameters:
         -
             message: '#.*#'
             path: '*ServiceProvider.php'
+
+        # Tests require direct instantiation and helpers — these strict rules don't apply
+        -
+            identifier: solid.dip.disallowInstantiation
+            path: tests/*
+        -
+            identifier: smells.helpersRestriction.helper
+            path: tests/*
+
+        # Nova resources and repeatables use __() for translations — this is the standard Nova pattern
+        -
+            identifier: smells.helpersRestriction.helper
+            paths:
+                - src/Nova/*
+
+        # APIController catches exceptions at the HTTP boundary to return proper JSON error responses
+        # This is intentional — the controller is the outermost layer where error formatting happens
+        -
+            identifier: smells.enforceLogicHandling
+            path: src/Http/Controllers/APIController.php
+        -
+            identifier: smells.enforceLogicHandling.import
+            path: src/Http/Controllers/APIController.php
+        -
+            identifier: smells.noDummyCatches
+            path: src/Http/Controllers/APIController.php
+        # Defensive catch for ModelNotFoundException — Orion may throw it depending on route resolution
+        -
+            identifier: catch.neverThrown
+            path: src/Http/Controllers/APIController.php

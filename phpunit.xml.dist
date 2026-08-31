@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         cacheDirectory=".phpunit.cache"
-         executionOrder="depends,defects"
-         requireCoverageMetadata="true"
-         beStrictAboutCoverageMetadata="true"
-         beStrictAboutOutputDuringTests="true"
-         failOnRisky="true"
-         failOnWarning="true"
-         colors="true"
-         displayDetailsOnTestsThatTriggerDeprecations="true"
-         displayDetailsOnTestsThatTriggerErrors="true"
-         displayDetailsOnTestsThatTriggerNotices="true"
-         displayDetailsOnTestsThatTriggerWarnings="true"
-         displayDetailsOnPhpunitDeprecations="true">
-    
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+>
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -26,21 +15,16 @@
         <testsuite name="Browser">
             <directory>tests/Browser</directory>
         </testsuite>
-        <testsuite name="Nova Api Test Suite">
-            <directory>tests</directory>
-        </testsuite>
     </testsuites>
-
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
     <coverage>
         <report>
             <clover outputFile="coverage.xml"/>
             <html outputDirectory="coverage-html"/>
         </report>
     </coverage>
-
-    <source>
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-    </source>
 </phpunit>

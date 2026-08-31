@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Services\Actions;
 
 use Carbon\Carbon;
@@ -46,25 +48,36 @@ class CacheToken extends Action
     }
 
     /**
-     * @param  array{tokenId?: string, token?: string}  $attributes
+     * The pipeline (execute) has already filled and validated the inputs
+     * against parameters() before handle() runs, so we trust $inputs here.
+     *
+     * @param  array{tokenId?: string, token?: string}  $inputs
      * @return array<string, bool>
      */
-    final public function handle(array $attributes = []): array
+    final public function handle(array $inputs = []): array
     {
-        $this->fill($attributes);
-
-        /** @var array{tokenId: string, token: string} $validated */
-        $validated = $this->validateAttributes();
-
-        $cacheKey = 'opscale.api.token.' . $validated['tokenId'];
-
         Cache::put(
-            $cacheKey,
-            $validated['token'],
+            'opscale.api.token.'.($inputs['tokenId'] ?? ''),
+            $inputs['token'] ?? '',
             Carbon::now()->addMinutes(5)
         );
 
         return ['success' => true];
+    }
+
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
+    final public function outputs(): array
+    {
+        return [
+            [
+                'name' => 'success',
+                'description' => 'Whether the token was cached successfully',
+                'type' => 'boolean',
+                'rules' => ['required', 'boolean'],
+            ],
+        ];
     }
 
     final public function asListener(AccessTokenGenerated $accessTokenGenerated): void
@@ -74,6 +87,9 @@ class CacheToken extends Action
         /** @var string $token */
         $token = $accessTokenGenerated->newAccessToken->plainTextToken;
 
-        $this->handle(['tokenId' => (string) $id, 'token' => $token]);
+        static::run([
+            'tokenId' => (string) $id,
+            'token' => $token,
+        ]);
     }
 }

@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Laravel\Nova\NovaServiceProvider;
+use Laravel\Sanctum\SanctumServiceProvider;
+use Opscale\NovaAPI\Nova\AccessToken;
 use Opscale\NovaAPI\Policies\APIPolicy;
 use Opscale\NovaAPI\Tests\TestCase;
+use Opscale\NovaAPI\ToolServiceProvider;
+use Orion\OrionServiceProvider;
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -32,7 +39,7 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('Read Token', ['users:read']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(200)
@@ -52,7 +59,7 @@ final class TokenAbilitiesTest extends TestCase
         ];
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/users', $userData);
 
         $testResponse->assertStatus(201);
@@ -71,10 +78,10 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('Update Token', ['users:update']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->putJson('/api/users/' . $targetUser->id, [
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->putJson('/api/users/'.$targetUser->id, [
             'name' => 'Updated Name',
-            'email' => 'updated' . $targetUser->email,
+            'email' => 'updated'.$targetUser->email,
             'password' => 'newpassword123',
         ]);
 
@@ -94,8 +101,8 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('Delete Token', ['users:delete']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->deleteJson('/api/users/' . $targetUser->id);
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->deleteJson('/api/users/'.$targetUser->id);
 
         $testResponse->assertStatus(200);
         $this->assertDatabaseMissing('users', [
@@ -110,7 +117,7 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('No Read Token', ['users:create', 'users:update']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(403);
@@ -123,7 +130,7 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('No Create Token', ['users:read', 'users:update']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/users', [
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -142,10 +149,10 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('No Update Token', ['users:read', 'users:create']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->putJson('/api/users/' . $targetUser->id, [
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->putJson('/api/users/'.$targetUser->id, [
             'name' => 'Updated Name',
-            'email' => 'updated' . $targetUser->email,
+            'email' => 'updated'.$targetUser->email,
             'password' => 'newpassword123',
         ]);
 
@@ -161,8 +168,8 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('No Delete Token', ['users:read', 'users:create', 'users:update']);
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
-        ])->deleteJson('/api/users/' . $targetUser->id);
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
+        ])->deleteJson('/api/users/'.$targetUser->id);
 
         $testResponse->assertStatus(403);
     }
@@ -181,19 +188,19 @@ final class TokenAbilitiesTest extends TestCase
 
         // Can read users
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
         $response->assertStatus(200);
 
         // Can read products
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/products');
         $response->assertStatus(200);
 
         // Can create products
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/products', [
             'name' => 'Test Product',
             'price' => 99.99,
@@ -203,7 +210,7 @@ final class TokenAbilitiesTest extends TestCase
 
         // Cannot create users (no users:create ability)
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->postJson('/api/users', [
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -223,13 +230,13 @@ final class TokenAbilitiesTest extends TestCase
 
         // Can access users
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
         $response->assertStatus(200);
 
         // Cannot access products
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/products');
         $response->assertStatus(403);
     }
@@ -241,7 +248,7 @@ final class TokenAbilitiesTest extends TestCase
         $newAccessToken = $user->createToken('Expired Token', ['users:read', 'products:read'], Carbon::now()->subHour());
 
         $testResponse = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $newAccessToken->plainTextToken,
+            'Authorization' => 'Bearer '.$newAccessToken->plainTextToken,
         ])->getJson('/api/users');
 
         $testResponse->assertStatus(401);
@@ -251,11 +258,11 @@ final class TokenAbilitiesTest extends TestCase
     protected function getPackageProviders($app): array
     {
         return array_merge(parent::getPackageProviders($app), [
-            \Opscale\NovaAPI\ToolServiceProvider::class,
-            \Laravel\Sanctum\SanctumServiceProvider::class,
-            \Laravel\Nova\NovaServiceProvider::class,
+            ToolServiceProvider::class,
+            SanctumServiceProvider::class,
+            NovaServiceProvider::class,
             \Workbench\App\Providers\NovaServiceProvider::class,
-            \Orion\OrionServiceProvider::class,
+            OrionServiceProvider::class,
         ]);
     }
 
@@ -276,7 +283,7 @@ final class TokenAbilitiesTest extends TestCase
         $app['config']->set('nova-api.resources', [
             \Workbench\App\Nova\User::class,
             \Workbench\App\Nova\Product::class,
-            \Opscale\NovaAPI\Nova\AccessToken::class,
+            AccessToken::class,
         ]);
     }
 }

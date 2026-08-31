@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -52,15 +55,15 @@ class ToolServiceProvider extends NovaPackageServiceProvider
 
     final public function registerAPIRoutes(): void
     {
-        /** @var array<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $configuredResources */
+        /** @var array<int, class-string<\Laravel\Nova\Resource<Model>>> $configuredResources */
         $configuredResources = config('nova-api.resources', []);
 
-        /** @var Collection<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $resources */
+        /** @var Collection<int, class-string<\Laravel\Nova\Resource<Model>>> $resources */
         $resources = new Collection($configuredResources);
 
         Route::prefix('api')->middleware(['auth:sanctum'])->group(function () use ($resources): void {
             foreach ($resources as $resource) {
-                /** @var class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>> $resource */
+                /** @var class-string<\Laravel\Nova\Resource<Model>> $resource */
                 Orion::resource($resource::uriKey(), APIController::class);
             }
         });
@@ -68,10 +71,10 @@ class ToolServiceProvider extends NovaPackageServiceProvider
 
     final public function registerAPIRequests(): void
     {
-        /** @var array<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $configuredResources */
+        /** @var array<int, class-string<\Laravel\Nova\Resource<Model>>> $configuredResources */
         $configuredResources = config('nova-api.resources', []);
 
-        /** @var Collection<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $resources */
+        /** @var Collection<int, class-string<\Laravel\Nova\Resource<Model>>> $resources */
         $resources = new Collection($configuredResources);
 
         foreach ($resources as $resource) {
@@ -90,7 +93,7 @@ class ToolServiceProvider extends NovaPackageServiceProvider
                 }
             });
 
-            $binding = $resource::uriKey() . '-request';
+            $binding = $resource::uriKey().'-request';
             $this->app->bindIf($binding, function ($app) use ($class, $resource): object {
                 $instance = new $class;
                 $instance->setResource($resource);
@@ -103,10 +106,10 @@ class ToolServiceProvider extends NovaPackageServiceProvider
 
     final public function registerAPIPolicies(): void
     {
-        /** @var array<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $configuredResources */
+        /** @var array<int, class-string<\Laravel\Nova\Resource<Model>>> $configuredResources */
         $configuredResources = config('nova-api.resources', []);
 
-        /** @var Collection<int, class-string<\Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>>> $resources */
+        /** @var Collection<int, class-string<\Laravel\Nova\Resource<Model>>> $resources */
         $resources = new Collection($configuredResources);
 
         foreach ($resources as $resource) {
@@ -125,7 +128,7 @@ class ToolServiceProvider extends NovaPackageServiceProvider
                 }
             });
 
-            $binding = $resource::uriKey() . '-policy';
+            $binding = $resource::uriKey().'-policy';
             $this->app->bindIf($binding, function ($app) use ($class, $resource): object {
                 $instance = new $class;
                 $instance->setResource($resource::uriKey());
@@ -142,7 +145,7 @@ class ToolServiceProvider extends NovaPackageServiceProvider
     {
         Event::listen(
             AccessTokenGenerated::class,
-            CacheToken::class
+            [CacheToken::class, 'asListener']
         );
     }
 }

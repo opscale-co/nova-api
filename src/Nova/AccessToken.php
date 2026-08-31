@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaAPI\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\Repeater;
 use Laravel\Nova\Fields\Text;
@@ -19,7 +22,7 @@ use Opscale\NovaAPI\Nova\Repeatables\Ability;
 use Opscale\NovaAPI\Services\Actions\ConsumeToken;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class AccessToken extends Resource
 {
@@ -56,7 +59,7 @@ class AccessToken extends Resource
     }
 
     /**
-     * @return array<string, \Laravel\Nova\Fields\Field>
+     * @return array<string, Field>
      */
     final public function defaultFields(NovaRequest $novaRequest): array
     {
@@ -96,7 +99,7 @@ class AccessToken extends Resource
     }
 
     /**
-     * @return array<int, \Laravel\Nova\Fields\Field>
+     * @return array<int, Field>
      */
     final public function fields(NovaRequest $request): array
     {
@@ -104,7 +107,7 @@ class AccessToken extends Resource
     }
 
     /**
-     * @return array<int, \Laravel\Nova\Fields\Field>
+     * @return array<int, Field>
      */
     final public function fieldsForDetail(NovaRequest $novaRequest): array
     {
@@ -118,10 +121,9 @@ class AccessToken extends Resource
                 /** @var int|string $key */
                 $key = $this->resource->getKey();
 
-                /** @var array{token: string} $result */
-                $result = ConsumeToken::run(['tokenId' => (string) $key]);
+                $token = ConsumeToken::run(['tokenId' => (string) $key])->data()['token'] ?? '';
 
-                return $result['token'];
+                return is_string($token) ? $token : '';
             })
             ->copyable()
             ->onlyOnDetail()
@@ -133,10 +135,9 @@ class AccessToken extends Resource
                 /** @var int|string $key */
                 $key = $this->resource->getKey();
 
-                /** @var array{token: string} $result */
-                $result = ConsumeToken::run(['tokenId' => (string) $key]);
+                $token = ConsumeToken::run(['tokenId' => (string) $key])->data()['token'] ?? '';
 
-                return $result['token'] !== '';
+                return is_string($token) && $token !== '';
             });
 
         return $fields;

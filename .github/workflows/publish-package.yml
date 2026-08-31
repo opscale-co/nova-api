@@ -30,10 +30,10 @@ jobs:
       - name: 📦 Install Node dependencies
         run: npm ci --ignore-scripts
 
-      - name: 🐘 Setup PHP 8.2
+      - name: 🐘 Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: bcmath, ctype, fileinfo, json, mbstring, openssl, pdo, pdo_mysql, pdo_pgsql, tokenizer, xml, zip
           coverage: none
 
