@@ -2,6 +2,12 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## [1.2.0](https://github.com/opscale-co/nova-api/compare/v1.1.0...v1.2.0) (2026-08-31)
+
+### Features
+
+* **deps:** bump to php 8.3, swap model-validation for opscale-co/validations, update dependencies ([2651f61](https://github.com/opscale-co/nova-api/commit/2651f610195d92aebaf64e63018b6272196291e9))
+
 ## [1.1.0](https://github.com/opscale-co/nova-api/compare/v1.0.3...v1.1.0) (2026-02-05)
 
 ### Features
