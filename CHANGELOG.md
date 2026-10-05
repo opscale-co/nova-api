@@ -2,6 +2,12 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## [1.3.0](https://github.com/opscale-co/nova-api/compare/v1.2.0...v1.3.0) (2026-10-05)
+
+### Features
+
+* **deps:** bump opscale-co/actions to ^4.0 ([6a4d117](https://github.com/opscale-co/nova-api/commit/6a4d1175e91b40b1494abd0399f702956483a44d))
+
 ## [1.2.0](https://github.com/opscale-co/nova-api/compare/v1.1.0...v1.2.0) (2026-08-31)
 
 ### Features
