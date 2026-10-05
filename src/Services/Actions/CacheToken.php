@@ -80,16 +80,28 @@ class CacheToken extends Action
         ];
     }
 
-    final public function asListener(AccessTokenGenerated $accessTokenGenerated): void
+    /**
+     * Map the AccessTokenGenerated event onto the Action's declared parameters
+     * so the base asListener() can execute() it through the standard pipeline.
+     *
+     * @param  array<int|string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    final protected function mapEventToInputs(array $arguments): array
     {
+        $inputs = parent::mapEventToInputs($arguments);
+
+        /** @var AccessTokenGenerated $accessTokenGenerated */
+        $accessTokenGenerated = $arguments[0];
+
         /** @var int|string $id */
         $id = $accessTokenGenerated->newAccessToken->accessToken->getKey();
         /** @var string $token */
         $token = $accessTokenGenerated->newAccessToken->plainTextToken;
 
-        static::run([
-            'tokenId' => (string) $id,
-            'token' => $token,
-        ]);
+        $inputs['tokenId'] = (string) $id;
+        $inputs['token'] = $token;
+
+        return $inputs;
     }
 }
