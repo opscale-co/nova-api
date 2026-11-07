@@ -2,6 +2,18 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## [2.0.0](https://github.com/opscale-co/nova-api/compare/v1.3.0...v2.0.0) (2026-11-07)
+
+### ⚠ BREAKING CHANGES
+
+* **laravel:** requires PHP 8.3+ and the Laravel 13 toolchain; drops Laravel 11/12.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* **laravel:** require Laravel 13, drop Laravel 11/12 ([d51dbc4](https://github.com/opscale-co/nova-api/commit/d51dbc41950e2811e071c2ed29edb5459d83a1d5))
+
 ## [1.3.0](https://github.com/opscale-co/nova-api/compare/v1.2.0...v1.3.0) (2026-10-05)
 
 ### Features
